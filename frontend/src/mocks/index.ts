@@ -85,7 +85,7 @@ export const mockUsers: User[] = [
     id: '1',
     name: 'João Silva',
     email: 'joao@email.com',
-    password: '123456',
+    password: 'senha123', 
     favoriteMovies: ['1', '2'],
     watchedMovies: ['1', '3', '4'],
     createdAt: new Date('2024-01-15')
@@ -94,7 +94,7 @@ export const mockUsers: User[] = [
     id: '2',
     name: 'Maria Santos',
     email: 'maria@email.com',
-    password: 'senha123',
+    password: 'maria123', 
     favoriteMovies: ['5', '6'],
     watchedMovies: ['2', '5', '6'],
     createdAt: new Date('2024-02-20')
@@ -103,7 +103,7 @@ export const mockUsers: User[] = [
     id: '3',
     name: 'Usuário Teste',
     email: 'usuario@teste.com',
-    password: 'teste123',
+    password: '123456', 
     favoriteMovies: ['1', '3'],
     watchedMovies: ['1', '2', '3'],
     createdAt: new Date('2024-03-01')
@@ -157,25 +157,22 @@ export const mockAPI = {
     return mockComments.filter(comment => comment.movieId === movieId);
   },
 
-  login: async (email: string, password: string): Promise<User> => {
+  login: async (email: string, password: string): Promise<User> => { // Removendo _ do password
     await delay(1000);
-    const user = mockUsers.find(u => u.email === email);
+    const user = mockUsers.find(u => u.email === email && u.password === password); // Verificando senha
     if (!user) {
-      throw new Error('Usuário não encontrado');
-    }
-    if (user.password !== password) {
-      throw new Error('Senha incorreta');
+      throw new Error('Usuário ou senha inválidos'); // Mensagem de erro mais genérica
     }
     return user;
   },
 
-  register: async (name: string, email: string, password: string): Promise<User> => {
+  register: async (name: string, email: string, _password: string): Promise<User> => {
     await delay(1000);
     const newUser: User = {
       id: Date.now().toString(),
       name,
       email,
-      password,
+      password: _password, // Adicionando senha ao novo usuário
       favoriteMovies: [],
       watchedMovies: [],
       createdAt: new Date()
@@ -184,3 +181,5 @@ export const mockAPI = {
     return newUser;
   }
 };
+
+

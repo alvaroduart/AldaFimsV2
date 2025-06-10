@@ -17,7 +17,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  password: string;
+  password?: string; // Adicionando a propriedade de senha
   favoriteMovies: string[];
   watchedMovies: string[];
   createdAt: Date;
@@ -82,3 +82,5 @@ export interface RegisterFormData {
 }
 
 export type { ReactNode };
+
+

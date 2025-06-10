@@ -26,7 +26,6 @@ export const MovieImage = styled.img`
   height: 300px;
   object-fit: cover;
   display: block;
-  
 `;
 
 export const MovieTitle = styled.h2`

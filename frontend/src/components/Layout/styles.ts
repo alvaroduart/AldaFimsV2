@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const LayoutContainer = styled.div<{ isDarkMode: boolean }>`
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: ${props => props.isDarkMode ? '#000' : '#fff'};
@@ -16,14 +16,15 @@ export const MainContent = styled.main`
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
-  margin-top: 250px;
-  
 
   @media (max-width: 768px) {
     padding: 15px;
+    padding-top: 110px; /* Ajusta para telas menores */
   }
 
   @media (max-width: 480px) {
     padding: 10px;
+    padding-top: 100px; /* Ajusta para telas muito pequenas */
   }
 `;
+
