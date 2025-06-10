@@ -17,7 +17,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <LayoutContainer isDarkMode={isDarkMode}>
       <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
-      <MainContent>
+      <MainContent isDarkMode={isDarkMode}>        
         {children}
       </MainContent>
       <Footer />

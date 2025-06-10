@@ -24,8 +24,10 @@ export const CardContainer = styled.article`
 export const MovieImage = styled.img`
   width: 100%;
   height: 300px;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+  margin-top: 20px;
+  
 `;
 
 export const MovieTitle = styled.h2`
