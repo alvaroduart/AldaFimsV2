@@ -18,11 +18,25 @@ export const GlobalStyles = createGlobalStyle`
     font-family: var(--font);
   }
 
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
   body {
     background: #fff;
     color: #000;
     line-height: 1.5;
     min-height: 100vh;
+    font-size: 16px;
+  }
+
+  #root {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   a {
@@ -70,13 +84,23 @@ export const GlobalStyles = createGlobalStyle`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
-    padding: 20px 0;
+    padding: 20px;
+    width: 100%;
+  }
+
+  @media (max-width: 1024px) {
+    .movies-grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+      padding: 18px;
+    }
   }
 
   @media (max-width: 768px) {
     .movies-grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 15px;
+      padding: 15px;
     }
   }
 
@@ -84,14 +108,29 @@ export const GlobalStyles = createGlobalStyle`
     .movies-grid {
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+      padding: 10px;
     }
   }
 
   /* Utility classes */
   .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 0 15px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 10px;
+    }
   }
 
   .text-center {
@@ -112,4 +151,52 @@ export const GlobalStyles = createGlobalStyle`
   .p-2 { padding: 1rem; }
   .p-3 { padding: 1.5rem; }
   .p-4 { padding: 2rem; }
+
+  /* Responsive typography */
+  h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 2rem;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+    }
+
+    body {
+      font-size: 14px;
+    }
+  }
 `;

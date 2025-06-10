@@ -92,6 +92,15 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     }
   };
 
+  const removeFromWatched = (movieId: string) => {
+    const newWatched = watchedMovies.filter(m => m.id !== movieId);
+    setWatchedMovies(newWatched);
+    
+    // Salvar no localStorage
+    const watchedIds = newWatched.map(m => m.id);
+    localStorage.setItem('watchedMovies', JSON.stringify(watchedIds));
+  };
+
   const searchMovies = (query: string): Movie[] => {
     if (!query.trim()) return movies;
     
@@ -114,6 +123,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     addToFavorites,
     removeFromFavorites,
     addToWatched,
+    removeFromWatched,
     searchMovies,
     getMovieById,
     loading

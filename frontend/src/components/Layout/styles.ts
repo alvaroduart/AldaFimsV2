@@ -12,11 +12,16 @@ export const LayoutContainer = styled.div<{ isDarkMode: boolean }>`
 export const MainContent = styled.main`
   flex: 1;
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
     padding: 15px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
   }
 `;

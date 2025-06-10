@@ -29,11 +29,6 @@ export const MovieDetails = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
-
-  p {
-    margin: 0;
-    color: #666;
-  }
 `;
 
 export const MovieTitle = styled.h1`
@@ -49,11 +44,65 @@ export const MovieRating = styled.div`
   font-weight: bold;
 `;
 
+export const MovieMeta = styled.div`
+  p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 1rem;
+  }
+`;
+
 export const MovieDescription = styled.p`
   font-size: 1.1rem;
   line-height: 1.6;
   color: #333 !important;
   margin-top: 20px;
+`;
+
+export const ActionButtons = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+`;
+
+export const ActionButton = styled.button<{ primary?: boolean; isFavorite?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  ${props => props.primary ? `
+    background: #DAA520;
+    color: white;
+    
+    &:hover {
+      background: #B8860B;
+    }
+  ` : `
+    background: ${props.isFavorite ? '#e74c3c' : '#f8f9fa'};
+    color: ${props.isFavorite ? 'white' : '#333'};
+    border: 2px solid ${props.isFavorite ? '#e74c3c' : '#ddd'};
+    
+    &:hover {
+      background: ${props.isFavorite ? '#c0392b' : '#e9ecef'};
+      border-color: ${props.isFavorite ? '#c0392b' : '#adb5bd'};
+    }
+  `}
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  svg {
+    font-size: 14px;
+  }
 `;
 
 export const CommentsSection = styled.section`

@@ -1,33 +1,35 @@
 import React from 'react';
 import MovieCard from '../../components/MovieCard';
-import { PageContainer, PageTitle, MoviesGrid, EmptyState } from './styles';
+import { useMovies } from '../../contexts/MovieContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { PageContainer, PageTitle, MoviesGrid, EmptyState, RemoveButton } from './styles';
 
 const HistoryPage: React.FC = () => {
-  // Mock data - seria buscado da API
-  const watchedMovies = [
-    {
-      id: '1',
-      title: 'Spider Man',
-      image: '/img/spiderman.png',
-      rating: 4.8
-    },
-    {
-      id: '3',
-      title: 'Justice League',
-      image: '/img/Justice Ligue.png',
-      rating: 2.3
-    },
-    {
-      id: '4',
-      title: 'A Forja',
-      image: '/img/forja.png',
-      rating: 1.2
-    }
-  ];
+  const { watchedMovies, removeFromWatched } = useMovies();
+  const { user } = useAuth();
 
   const handleMovieClick = (movieId: string) => {
     console.log('Clicou no filme do histórico:', movieId);
+    // Aqui você pode navegar para a página de detalhes do filme
   };
+
+  const handleRemoveFromHistory = (movieId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeFromWatched(movieId);
+  };
+
+  // Se o usuário não estiver logado, não deve chegar aqui devido ao PrivateRoute
+  if (!user) {
+    return (
+      <PageContainer>
+        <PageTitle>Histórico de Filmes</PageTitle>
+        <EmptyState>
+          <p>Você precisa estar logado para ver seu histórico.</p>
+        </EmptyState>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
@@ -36,14 +38,22 @@ const HistoryPage: React.FC = () => {
       {watchedMovies.length > 0 ? (
         <MoviesGrid>
           {watchedMovies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              id={movie.id}
-              title={movie.title}
-              image={movie.image}
-              rating={movie.rating}
-              onClick={() => handleMovieClick(movie.id)}
-            />
+            <div key={movie.id} style={{ position: 'relative' }}>
+              <MovieCard
+                id={movie.id}
+                title={movie.title}
+                image={movie.image}
+                rating={movie.rating}
+                onClick={() => handleMovieClick(movie.id)}
+                showFavoriteButton={false}
+              />
+              <RemoveButton
+                onClick={(e) => handleRemoveFromHistory(movie.id, e)}
+                title="Remover do histórico"
+              >
+                ✕
+              </RemoveButton>
+            </div>
           ))}
         </MoviesGrid>
       ) : (

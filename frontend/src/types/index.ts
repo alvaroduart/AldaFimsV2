@@ -45,6 +45,7 @@ export interface MovieContextType {
   addToFavorites: (movieId: string) => void;
   removeFromFavorites: (movieId: string) => void;
   addToWatched: (movieId: string) => void;
+  removeFromWatched: (movieId: string) => void;
   searchMovies: (query: string) => Movie[];
   getMovieById: (id: string) => Movie | undefined;
   loading: boolean;

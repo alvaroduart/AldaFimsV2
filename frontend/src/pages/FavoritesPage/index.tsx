@@ -1,26 +1,19 @@
 import React from 'react';
 import MovieCard from '../../components/MovieCard';
-import { PageContainer, PageTitle, MoviesGrid, EmptyState } from './styles';
+import { useMovies } from '../../contexts/MovieContext';
+import { PageContainer, PageTitle, MoviesGrid, EmptyState, RemoveButton } from './styles';
 
 const FavoritesPage: React.FC = () => {
-  // Mock data - seria buscado da API
-  const favoriteMovies = [
-    {
-      id: '1',
-      title: 'Spider Man',
-      image: '/img/spiderman.png',
-      rating: 4.8
-    },
-    {
-      id: '2',
-      title: 'Batman',
-      image: '/img/Batman.png',
-      rating: 3.7
-    }
-  ];
+  const { favoriteMovies, removeFromFavorites } = useMovies();
 
   const handleMovieClick = (movieId: string) => {
     console.log('Clicou no filme favorito:', movieId);
+  };
+
+  const handleRemoveFromFavorites = (movieId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeFromFavorites(movieId);
   };
 
   return (
@@ -30,14 +23,22 @@ const FavoritesPage: React.FC = () => {
       {favoriteMovies.length > 0 ? (
         <MoviesGrid>
           {favoriteMovies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              id={movie.id}
-              title={movie.title}
-              image={movie.image}
-              rating={movie.rating}
-              onClick={() => handleMovieClick(movie.id)}
-            />
+            <div key={movie.id} style={{ position: 'relative' }}>
+              <MovieCard
+                id={movie.id}
+                title={movie.title}
+                image={movie.image}
+                rating={movie.rating}
+                onClick={() => handleMovieClick(movie.id)}
+                showFavoriteButton={false}
+              />
+              <RemoveButton
+                onClick={(e) => handleRemoveFromFavorites(movie.id, e)}
+                title="Remover dos favoritos"
+              >
+                ✕
+              </RemoveButton>
+            </div>
           ))}
         </MoviesGrid>
       ) : (
