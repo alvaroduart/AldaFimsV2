@@ -9,11 +9,16 @@ export const HeaderContainer = styled.header`
   align-items: center;
   padding: 20px;
   gap: 20px;
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    padding: 15px 20px;
   }
 `;
 
@@ -113,5 +118,52 @@ export const IconButton = styled.button`
 
   svg {
     font-size: 1rem;
+  }
+`;
+
+export const UserMenu = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+export const UserMenuDropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #333;
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+
+  div {
+    padding: 8px 12px;
+    border-bottom: 1px solid #555;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  a, button {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    color: #fff;
+    text-decoration: none;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #555;
+    }
+
+    svg {
+      margin-right: 8px;
+    }
   }
 `;

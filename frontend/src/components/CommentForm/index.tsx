@@ -29,7 +29,7 @@ interface CommentFormProps {
   movieId?: string;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
+const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId: _movieId }) => {
   const { user, isAuthenticated } = useAuth();
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState<Comment[]>([

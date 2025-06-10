@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { MovieContextType } from '../types';
-import type { Movie } from '../types';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { MovieContextType, Movie, ReactNode } from '../types';
 //import { SearchFilters } from '../types';
 import { mockAPI, mockMovies } from '../mocks';
 

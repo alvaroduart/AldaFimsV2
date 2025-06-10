@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FaSearch, FaFilter, FaMoon, FaSun } from 'react-icons/fa';
-import { HeaderContainer, Logo, MenuButton, Navigation, SearchForm, SearchInput, IconButton } from './styles';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaSearch, FaFilter, FaMoon, FaSun, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { useAuth } from '../../contexts/AuthContext';
+import { HeaderContainer, Logo, MenuButton, Navigation, SearchForm, SearchInput, IconButton, UserMenu, UserMenuDropdown } from './styles';
 
 interface HeaderProps {
   isDarkMode?: boolean;
@@ -11,15 +12,28 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ isDarkMode = false, onToggleDarkMode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleUserMenu = () => {
+    setIsUserMenuOpen(!isUserMenuOpen);
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // Implementar lógica de busca
     console.log('Buscar por:', searchTerm);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsUserMenuOpen(false);
+    navigate('/');
   };
 
   return (
@@ -33,8 +47,14 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode = false, onToggleDarkMode })
       </MenuButton>
 
       <Navigation isOpen={isMenuOpen}>
-        <Link to="/favoritos">Favoritos</Link>
-        <Link to="/historico">Histórico</Link>
+        {isAuthenticated ? (
+          <>
+            <Link to="/favoritos">Favoritos</Link>
+            <Link to="/historico">Histórico</Link>
+          </>
+        ) : (
+          <Link to="/login">Login</Link>
+        )}
         <Link to="/contato">Contato</Link>
       </Navigation>
 
@@ -59,6 +79,28 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode = false, onToggleDarkMode })
           {isDarkMode ? <FaSun /> : <FaMoon />}
         </IconButton>
       </SearchForm>
+
+      {isAuthenticated && (
+        <UserMenu>
+          <IconButton 
+            type="button" 
+            aria-label="Menu do usuário"
+            onClick={toggleUserMenu}
+          >
+            <FaUser />
+          </IconButton>
+          {isUserMenuOpen && (
+            <UserMenuDropdown>
+              <div>Olá, {user?.name}</div>
+              <Link to="/favoritos">Favoritos</Link>
+              <Link to="/historico">Histórico</Link>
+              <button onClick={handleLogout}>
+                <FaSignOutAlt /> Sair
+              </button>
+            </UserMenuDropdown>
+          )}
+        </UserMenu>
+      )}
     </HeaderContainer>
   );
 };

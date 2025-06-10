@@ -4,6 +4,11 @@ export const PageContainer = styled.div`
   max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
+  
+  @media (max-width: 768px) {
+    padding: 15px;
+    margin-top: 20px;
+  }
 `;
 
 export const MovieInfo = styled.div`
@@ -14,7 +19,7 @@ export const MovieInfo = styled.div`
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 25px;
   }
 `;
 
@@ -23,6 +28,12 @@ export const MovieImage = styled.img`
   height: auto;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  @media (max-width: 768px) {
+    max-width: 350px;
+    margin: 0 auto;
+    display: block;
+  }
 `;
 
 export const MovieDetails = styled.div`
@@ -36,12 +47,22 @@ export const MovieTitle = styled.h1`
   color: #333;
   margin: 0;
   font-style: italic;
+  
+  @media (max-width: 768px) {
+    font-size: 2rem;
+    text-align: center;
+  }
 `;
 
 export const MovieRating = styled.div`
   font-size: 1.5rem;
   color: #DAA520;
   font-weight: bold;
+  
+  @media (max-width: 480px) {
+    font-size: 1.3rem;
+    text-align: center;
+  }
 `;
 
 export const MovieMeta = styled.div`
@@ -49,6 +70,10 @@ export const MovieMeta = styled.div`
     margin: 5px 0;
     color: #666;
     font-size: 1rem;
+    
+    @media (max-width: 480px) {
+      text-align: center;
+    }
   }
 `;
 
@@ -57,6 +82,11 @@ export const MovieDescription = styled.p`
   line-height: 1.6;
   color: #333 !important;
   margin-top: 20px;
+  
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    text-align: justify;
+  }
 `;
 
 export const ActionButtons = styled.div`
@@ -64,6 +94,11 @@ export const ActionButtons = styled.div`
   gap: 15px;
   margin-top: 20px;
   flex-wrap: wrap;
+  
+  @media (max-width: 480px) {
+    justify-content: center;
+    gap: 10px;
+  }
 `;
 
 export const ActionButton = styled.button<{ primary?: boolean; isFavorite?: boolean }>`
@@ -103,15 +138,31 @@ export const ActionButton = styled.button<{ primary?: boolean; isFavorite?: bool
   svg {
     font-size: 14px;
   }
+  
+  @media (max-width: 480px) {
+    padding: 10px 15px;
+    font-size: 14px;
+    flex: 1;
+    justify-content: center;
+  }
 `;
 
 export const CommentsSection = styled.section`
   border-top: 1px solid #ddd;
   padding-top: 40px;
+  
+  @media (max-width: 768px) {
+    padding-top: 30px;
+  }
 `;
 
 export const SectionTitle = styled.h2`
   color: #333;
   margin-bottom: 20px;
   font-size: 1.8rem;
+  
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+    text-align: center;
+  }
 `;

@@ -85,6 +85,7 @@ export const mockUsers: User[] = [
     id: '1',
     name: 'João Silva',
     email: 'joao@email.com',
+    password: '123456',
     favoriteMovies: ['1', '2'],
     watchedMovies: ['1', '3', '4'],
     createdAt: new Date('2024-01-15')
@@ -93,9 +94,19 @@ export const mockUsers: User[] = [
     id: '2',
     name: 'Maria Santos',
     email: 'maria@email.com',
+    password: 'senha123',
     favoriteMovies: ['5', '6'],
     watchedMovies: ['2', '5', '6'],
     createdAt: new Date('2024-02-20')
+  },
+  {
+    id: '3',
+    name: 'Usuário Teste',
+    email: 'usuario@teste.com',
+    password: 'teste123',
+    favoriteMovies: ['1', '3'],
+    watchedMovies: ['1', '2', '3'],
+    createdAt: new Date('2024-03-01')
   }
 ];
 
@@ -152,6 +163,9 @@ export const mockAPI = {
     if (!user) {
       throw new Error('Usuário não encontrado');
     }
+    if (user.password !== password) {
+      throw new Error('Senha incorreta');
+    }
     return user;
   },
 
@@ -161,6 +175,7 @@ export const mockAPI = {
       id: Date.now().toString(),
       name,
       email,
+      password,
       favoriteMovies: [],
       watchedMovies: [],
       createdAt: new Date()

@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 export interface Movie {
   id: string;
   title: string;
@@ -15,6 +17,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  password: string;
   favoriteMovies: string[];
   watchedMovies: string[];
   createdAt: Date;
@@ -77,3 +80,5 @@ export interface RegisterFormData {
   password: string;
   confirmPassword: string;
 }
+
+export type { ReactNode };
