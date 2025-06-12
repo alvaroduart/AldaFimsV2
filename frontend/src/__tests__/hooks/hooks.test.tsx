@@ -3,8 +3,6 @@ import React, { useRef } from 'react';
 import { test, expect, vi, describe } from 'vitest';
 import { useLocalStorage, useClickOutside, useDebounce, useForm } from '../../hooks';
 
-
-// useLocalStorage
 describe('useLocalStorage', () => {
   const key = 'testKey';
   const initialValue = 'initialValue';
@@ -83,9 +81,8 @@ describe('useLocalStorage', () => {
   });
 });
 
-// useClickOutside
 function TestComponent({ onOutsideClick }: { onOutsideClick: () => void }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null!);
   useClickOutside(ref, onOutsideClick);
 
   return (
@@ -101,7 +98,6 @@ function TestComponent({ onOutsideClick }: { onOutsideClick: () => void }) {
 test('chama callback ao clicar fora do elemento', () => {
   const callback = vi.fn();
   const { getByTestId } = render(<TestComponent onOutsideClick={callback} />);
-
   fireEvent.mouseDown(getByTestId('outside'));
   expect(callback).toHaveBeenCalled();
 });
@@ -109,7 +105,6 @@ test('chama callback ao clicar fora do elemento', () => {
 test('não chama callback ao clicar dentro do elemento', () => {
   const callback = vi.fn();
   const { getByTestId } = render(<TestComponent onOutsideClick={callback} />);
-
   fireEvent.mouseDown(getByTestId('inside'));
   expect(callback).not.toHaveBeenCalled();
 });
@@ -118,22 +113,15 @@ test('remove event listener ao desmontar', () => {
   const callback = vi.fn();
   const addSpy = vi.spyOn(document, 'addEventListener');
   const removeSpy = vi.spyOn(document, 'removeEventListener');
-
   const { unmount } = render(<TestComponent onOutsideClick={callback} />);
-
   expect(addSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
-
   unmount();
-
   expect(removeSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
-
   addSpy.mockRestore();
   removeSpy.mockRestore();
 });
 
-// useDebounce
-
-describe ('useDebounce', () => {
+describe('useDebounce', () => {
   beforeAll(() => {
     vi.useFakeTimers();
   });
@@ -167,8 +155,6 @@ describe ('useDebounce', () => {
   });
 });
 
-// useForm
-
 describe('useForm', () => {
   const initialValues = { name: '', email: '' };
 
@@ -179,52 +165,41 @@ describe('useForm', () => {
 
   test('should handle field change', () => {
     const { result } = renderHook(() => useForm(initialValues, vi.fn()));
-
     act(() => {
       result.current.handleChange('name', 'John');
     });
-
     expect(result.current.values.name).toBe('John');
   });
 
   test('should call onSubmit with current values', async () => {
     const onSubmit = vi.fn();
     const { result } = renderHook(() => useForm(initialValues, onSubmit));
-
     const fakeEvent = { preventDefault: vi.fn() } as unknown as React.FormEvent;
-
     act(() => {
       result.current.handleChange('email', 'john@example.com');
     });
-
     await act(async () => {
       await result.current.handleSubmit(fakeEvent);
     });
-
     expect(onSubmit).toHaveBeenCalledWith({ name: '', email: 'john@example.com' });
   });
 
   test('should reset form to initial values', () => {
     const { result } = renderHook(() => useForm(initialValues, vi.fn()));
-
     act(() => {
       result.current.handleChange('name', 'Jane');
     });
-
     act(() => {
       result.current.reset();
     });
-
     expect(result.current.values).toEqual(initialValues);
   });
 
   test('should set field error', () => {
     const { result } = renderHook(() => useForm(initialValues, vi.fn()));
-
     act(() => {
       result.current.setFieldError('email', 'Email inválido');
     });
-
     expect(result.current.errors.email).toBe('Email inválido');
   });
 });

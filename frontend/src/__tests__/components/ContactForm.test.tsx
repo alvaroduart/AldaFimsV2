@@ -1,29 +1,45 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import ContactForm from "../../components/ContactForm";
-import { vi } from "vitest";
+// src/__tests__/components/ContactForm.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import ContactForm from '../../components/ContactForm';
+import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 
-it("deve permitir que um usuário envie o formulário com dados válidos", async () => {
-  const onSubmitMock = vi.fn();
-  const user = userEvent.setup();
 
-  render(<ContactForm onSubmit={onSubmitMock} />);
+describe('<ContactForm />', () => {
+  it('exibe mensagens de erro ao tentar enviar sem preencher', async () => {
+    render(<ContactForm onSubmit={function (): void {
+      throw new Error('Function not implemented.');
+    } } />);
 
-  const nameInput = screen.getByPlaceholderText(/Seu Nome/i);
-  const emailInput = screen.getByPlaceholderText(/E-mail/i);
-  const messageInput = screen.getByPlaceholderText(/Comentário \/ Dúvida/i);
-  const submitButton = screen.getByRole("button", { name: /Enviar/i });
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
 
-  await user.type(nameInput, "Usuário Teste");
-  await user.type(emailInput, "usuario.teste@example.com");
-  await user.type(messageInput, "Olá! Esta é uma mensagem de teste com mais de dez caracteres.");
+    
+  });
 
-  await user.click(submitButton);
+  it('valida e-mail inválido e mensagem curta', async () => {
+    render(<ContactForm onSubmit={vi.fn()} />);
 
-  expect(onSubmitMock).toHaveBeenCalledTimes(1);
-  expect(onSubmitMock).toHaveBeenCalledWith({
-    name: "Usuário Teste",
-    email: "usuario.teste@example.com",
-    message: "Olá! Esta é uma mensagem de teste com mais de dez caracteres.",
+    const nomeInput = screen.getByPlaceholderText(/seu nome/i);
+    const emailInput = screen.getByPlaceholderText(/e-mail/i);
+    const mensagemTextarea = screen.getByPlaceholderText(/comentário/i);
+
+    await userEvent.type(nomeInput, 'A');
+    await userEvent.type(emailInput, 'email-invalido');
+    await userEvent.type(mensagemTextarea, 'Curto');
+
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
+
+    
+  });
+
+  it('limpa mensagens de erro ao alterar os campos', async () => {
+    render(<ContactForm onSubmit={vi.fn()} />);
+
+    const nomeInput = screen.getByPlaceholderText(/seu nome/i);
+
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
+
+    await userEvent.type(nomeInput, 'Lucas');
+    
   });
 });

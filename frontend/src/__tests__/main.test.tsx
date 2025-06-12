@@ -24,19 +24,17 @@ mockRootElement.id = 'root';
 document.body.appendChild(mockRootElement);
 
 it('deve renderizar o App dentro do React.StrictMode usando react-dom/client', async () => {
-  await import('../main'); // ajuste o caminho do seu entrypoint
+  await import('../main');
 
   expect(capturedCreateRootFn).toHaveBeenCalledTimes(1);
   expect(capturedCreateRootFn).toHaveBeenCalledWith(mockRootElement);
 
   expect(capturedRenderFn).toHaveBeenCalledTimes(1);
 
-
   const renderArg = capturedRenderFn.mock.calls[0][0];
   expect(renderArg.type).toBe(React.StrictMode);
 
   render(renderArg);
 
-  
   expect(screen.getByTestId('mock-app-component')).toBeInTheDocument();
 });

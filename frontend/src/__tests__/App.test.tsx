@@ -22,7 +22,7 @@ vi.mock('../styles/GlobalStyle', () => ({
 
 describe('App component', () => {
   it('renders AppRoutes correctly', () => {
-    render(<App />); // 👈 Sem MemoryRouter aqui
+    render(<App />);
     expect(screen.getByText('Mocked App Routes')).toBeInTheDocument();
   });
 });
