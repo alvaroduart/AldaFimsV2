@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
+import { mockAPI } from '../../mocks';
+import type { Comment } from '../../types';
 import { 
   FormContainer, 
   TextArea, 
@@ -16,40 +18,36 @@ import {
   LoginPrompt 
 } from './styles';
 
-interface Comment {
-  id: string;
-  author: string;
-  text: string;
-  date: string;
-  userId: string;
-}
-
 interface CommentFormProps {
   onSubmit: (comment: string) => void;
   movieId?: string;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId: _movieId }) => {
+const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
   const { user, isAuthenticated } = useAuth();
   const [comment, setComment] = useState('');
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: '1',
-      author: 'João Silva',
-      text: 'Filme incrível! Uma das melhores adaptações de super-herói que já vi.',
-      date: '2024-06-08',
-      userId: '1'
-    },
-    {
-      id: '2',
-      author: 'Maria Santos',
-      text: 'Gostei muito da atuação do protagonista. História envolvente!',
-      date: '2024-06-07',
-      userId: '2'
-    }
-  ]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadComments = async () => {
+      if (movieId) {
+        setLoading(true);
+        try {
+          const movieComments = await mockAPI.getCommentsByMovieId(movieId);
+          setComments(movieComments);
+        } catch (error) {
+          console.error('Erro ao carregar comentários:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadComments();
+  }, [movieId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,13 +56,14 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId: _movieId }
       return;
     }
     
-    if (comment.trim()) {
+    if (comment.trim() && movieId) {
       const newComment: Comment = {
         id: Date.now().toString(),
-        author: user?.name || 'Usuário',
-        text: comment.trim(),
-        date: new Date().toISOString().split('T')[0],
-        userId: user?.id || ''
+        movieId,
+        userId: user?.id || '',
+        userName: user?.name || 'Usuário',
+        content: comment.trim(),
+        createdAt: new Date()
       };
       
       setComments([newComment, ...comments]);
@@ -82,7 +81,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId: _movieId }
     if (editText.trim()) {
       setComments(comments.map(c => 
         c.id === commentId 
-          ? { ...c, text: editText.trim() }
+          ? { ...c, content: editText.trim() }
           : c
       ));
       setEditingId(null);
@@ -132,60 +131,64 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId: _movieId }
       </FormContainer>
 
       <CommentsList>
-        {comments.map((commentItem) => (
-          <CommentItem key={commentItem.id}>
-            <CommentAuthor>{commentItem.author}</CommentAuthor>
-            <CommentDate>{new Date(commentItem.date).toLocaleDateString('pt-BR')}</CommentDate>
-            
-            {editingId === commentItem.id ? (
-              <div>
-                <EditTextArea
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  rows={3}
-                />
-                <CommentActions>
-                  <ActionButton 
-                    onClick={() => handleSaveEdit(commentItem.id)}
-                    color="#27ae60"
-                    title="Salvar"
-                  >
-                    <FaSave />
-                  </ActionButton>
-                  <ActionButton 
-                    onClick={handleCancelEdit}
-                    color="#95a5a6"
-                    title="Cancelar"
-                  >
-                    <FaTimes />
-                  </ActionButton>
-                </CommentActions>
-              </div>
-            ) : (
-              <div>
-                <CommentText>{commentItem.text}</CommentText>
-                {canEditComment(commentItem.userId) && (
+        {loading ? (
+          <p>Carregando comentários...</p>
+        ) : (
+          comments.map((commentItem) => (
+            <CommentItem key={commentItem.id}>
+              <CommentAuthor>{commentItem.userName}</CommentAuthor>
+              <CommentDate>{commentItem.createdAt.toLocaleDateString('pt-BR')}</CommentDate>
+              
+              {editingId === commentItem.id ? (
+                <div>
+                  <EditTextArea
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    rows={3}
+                  />
                   <CommentActions>
                     <ActionButton 
-                      onClick={() => handleEdit(commentItem.id, commentItem.text)}
-                      color="#3498db"
-                      title="Editar"
+                      onClick={() => handleSaveEdit(commentItem.id)}
+                      color="#27ae60"
+                      title="Salvar"
                     >
-                      <FaEdit />
+                      <FaSave />
                     </ActionButton>
                     <ActionButton 
-                      onClick={() => handleDelete(commentItem.id)}
-                      color="#e74c3c"
-                      title="Excluir"
+                      onClick={handleCancelEdit}
+                      color="#95a5a6"
+                      title="Cancelar"
                     >
-                      <FaTrash />
+                      <FaTimes />
                     </ActionButton>
                   </CommentActions>
-                )}
-              </div>
-            )}
-          </CommentItem>
-        ))}
+                </div>
+              ) : (
+                <div>
+                  <CommentText>{commentItem.content}</CommentText>
+                  {canEditComment(commentItem.userId) && (
+                    <CommentActions>
+                      <ActionButton 
+                        onClick={() => handleEdit(commentItem.id, commentItem.content)}
+                        color="#3498db"
+                        title="Editar"
+                      >
+                        <FaEdit />
+                      </ActionButton>
+                      <ActionButton 
+                        onClick={() => handleDelete(commentItem.id)}
+                        color="#e74c3c"
+                        title="Excluir"
+                      >
+                        <FaTrash />
+                      </ActionButton>
+                    </CommentActions>
+                  )}
+                </div>
+              )}
+            </CommentItem>
+          ))
+        )}
       </CommentsList>
     </div>
   );

@@ -10,7 +10,7 @@ const HistoryPage: React.FC = () => {
 
   const handleMovieClick = (movieId: string) => {
     console.log('Clicou no filme do histórico:', movieId);
-    // Aqui você pode navegar para a página de detalhes do filme
+    
   };
 
   const handleRemoveFromHistory = (movieId: string, e: React.MouseEvent) => {

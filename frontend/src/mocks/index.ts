@@ -77,7 +77,32 @@ export const mockMovies: Movie[] = [
     duration: '152 min',
     director: 'Christopher Nolan',
     cast: ['Christian Bale', 'Heath Ledger', 'Aaron Eckhart']
-  }
+  },
+  {
+    id: '7',
+    title: 'Inception',
+    image: '/img/inception.png',
+    rating: 4.8,
+    description: 'Um ladrão que invade os sonhos das pessoas recebe a missão de implantar uma ideia na mente de um alvo.',
+    year: 2010,
+    genre: 'Ação, Ficção Científica, Suspense',
+    duration: '148 min',
+    director: 'Christopher Nolan',
+    cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page']
+},
+{
+  id: '8',
+  title: 'Interstellar',
+  image: '/img/interstellar.png',
+  rating: 4.6,
+  description: 'Um grupo de exploradores viaja por um buraco de minhoca no espaço em busca de um novo lar para a humanidade.',
+  year: 2014,
+  genre: 'Aventura, Drama, Ficção Científica',
+  duration: '169 min',
+  director: 'Christopher Nolan',
+  cast: ['Matthew McConaughey', 'Anne Hathaway', 'Jessica Chastain']
+}
+
 ];
 
 export const mockUsers: User[] = [
@@ -134,6 +159,46 @@ export const mockComments: Comment[] = [
     userName: 'João Silva',
     content: 'Christopher Nolan revolucionou os filmes de super-herói.',
     createdAt: new Date('2024-03-03')
+  },
+  {
+    id: '4',
+    movieId: '2',
+    userId: '3',
+    userName: 'Usuário Teste',
+    content: 'Batman Begins é uma obra-prima! A origem do Batman nunca foi tão bem contada.',
+    createdAt: new Date('2024-03-04')
+  },
+  {
+    id: '5',
+    movieId: '3',
+    userId: '2',
+    userName: 'Maria Santos',
+    content: 'Liga da Justiça tem seus momentos, mas poderia ser melhor.',
+    createdAt: new Date('2024-03-05')
+  },
+  {
+    id: '6',
+    movieId: '4',
+    userId: '1',
+    userName: 'João Silva',
+    content: 'Um filme inspirador sobre fé e perseverança. Recomendo!',
+    createdAt: new Date('2024-03-06')
+  },
+  {
+    id: '7',
+    movieId: '1',
+    userId: '3',
+    userName: 'Usuário Teste',
+    content: 'Filme incrível! Uma das melhores adaptações de super-herói que já vi.',
+    createdAt: new Date('2024-06-08')
+  },
+  {
+    id: '8',
+    movieId: '2',
+    userId: '2',
+    userName: 'Maria Santos',
+    content: 'Gostei muito da atuação do protagonista. História envolvente!',
+    createdAt: new Date('2024-06-07')
   }
 ];
 
@@ -168,11 +233,18 @@ export const mockAPI = {
 
   register: async (name: string, email: string, _password: string): Promise<User> => {
     await delay(1000);
+    
+    // Verificar se o email já existe
+    const existingUser = mockUsers.find(u => u.email === email);
+    if (existingUser) {
+      throw new Error('Este e-mail já está cadastrado');
+    }
+    
     const newUser: User = {
       id: Date.now().toString(),
       name,
       email,
-      password: _password, // Adicionando senha ao novo usuário
+      password: _password,
       favoriteMovies: [],
       watchedMovies: [],
       createdAt: new Date()

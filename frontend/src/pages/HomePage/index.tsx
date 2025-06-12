@@ -1,7 +1,7 @@
 import React from 'react';
 import MovieCard from '../../components/MovieCard';
 import { PageContainer, MoviesGrid } from './styles';
-import { mockMovies } from '../../mocks'; // Importar mockMovies do arquivo de mocks
+import { mockMovies } from '../../mocks'; 
 
 const HomePage: React.FC = () => {
   const handleMovieClick = (movieId: string) => {

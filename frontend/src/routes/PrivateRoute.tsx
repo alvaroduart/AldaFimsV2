@@ -24,7 +24,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    // Redirecionar para login, salvando a localização atual
+    
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

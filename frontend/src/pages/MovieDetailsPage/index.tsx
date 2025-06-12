@@ -35,7 +35,7 @@ const MovieDetailsPage: React.FC = () => {
 
   const handleComment = (comment: string) => {
     console.log('Novo comentário:', comment);
-    // Aqui seria implementada a lógica para salvar o comentário
+    
   };
 
   const handleFavoriteToggle = () => {

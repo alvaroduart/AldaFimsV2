@@ -47,8 +47,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (rememberMe) {
         localStorage.setItem('rememberMe', 'true');
       }
-    } catch (error) {
-      throw error;
+
     } finally {
       setLoading(false);
     }
@@ -62,8 +61,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userData', JSON.stringify(userData));
-    } catch (error) {
-      throw error;
     } finally {
       setLoading(false);
     }
@@ -91,6 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);

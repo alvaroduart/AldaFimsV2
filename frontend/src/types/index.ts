@@ -17,7 +17,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  password?: string; // Adicionando a propriedade de senha
+  password?: string; 
   favoriteMovies: string[];
   watchedMovies: string[];
   createdAt: Date;

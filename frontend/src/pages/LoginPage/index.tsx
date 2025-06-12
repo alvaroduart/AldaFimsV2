@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
     try {
       await login(email, password, rememberMe);
       
-      // Redirecionar para a página anterior ou para a home
+      
       const from = location.state?.from?.pathname || '/';
       navigate(from, { replace: true });
     } catch (error) {

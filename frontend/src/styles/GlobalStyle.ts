@@ -55,7 +55,6 @@ export const GlobalStyles = createGlobalStyle`
     font-family: inherit;
   }
 
-  /* Scrollbar customization */
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -73,13 +72,7 @@ export const GlobalStyles = createGlobalStyle`
     background: #B8860B;
   }
 
-  /* Focus styles for accessibility */
-  *:focus {
-    outline: 2px solid #DAA520;
-    outline-offset: 2px;
-  }
-
-  /* Responsive grid for movie cards */
+ 
   .movies-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -112,8 +105,7 @@ export const GlobalStyles = createGlobalStyle`
     }
   }
 
-  /* Utility classes */
-  .container {
+    .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
