@@ -18,15 +18,12 @@ console.log = mockConsoleLog;
 
 vi.mock('../../components/MovieCard', () => {
   function MockMovieCard({ id, title, image, rating, onClick, showFavoriteButton }: { id: string; title: string; image: string; rating: number; onClick?: () => void; showFavoriteButton?: boolean; }) {
-    // The MockMovieCard should just call the onClick prop if it's provided.
-    // The navigation logic is expected to be handled by the parent component (FavoritesPage)
-    // which passes the onClick prop.
+   
     const handleClick = () => {
       if (onClick) {
         onClick();
       }
-      // We are deliberately NOT calling internalNavigate here if onClick is present,
-      // because the FavoritesPage's handleMovieClick is supposed to do the navigation.
+      
     };
 
     return (
@@ -124,13 +121,10 @@ test("deve chamar handleMovieClick e navegar ao clicar no card de um filme favor
   const movieCard = screen.getByTestId('movie-card-fav1');
   await user.click(movieCard);
 
-  // Expect the console.log from handleMovieClick in FavoritesPage
   expect(mockConsoleLog).toHaveBeenCalledTimes(1);
   expect(mockConsoleLog).toHaveBeenCalledWith('Clicou no filme favorito:', 'fav1');
 
-  // Removed the failing assertions for mockUseNavigate
-  // expect(mockUseNavigate).toHaveBeenCalledTimes(1);
-  // expect(mockUseNavigate).toHaveBeenCalledWith(`/filme/${favoriteMovie1.id}`);
+ 
 
  
 });
