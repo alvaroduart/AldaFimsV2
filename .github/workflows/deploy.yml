@@ -49,7 +49,7 @@ jobs:
       #   run: docker info
 
       - name: Build da imagem de produção
-        run: docker build -f Dockerfile.prod -t frontend:latest .
+        run: docker build -f Dockerfile -t frontend:latest .
 
       # Para enviar para o Docker Hub
       #- name: Push imagem para o Docker Hub
