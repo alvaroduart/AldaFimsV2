@@ -1,29 +1,38 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { useMovies } from '../../contexts/MovieContext';
+import { useAuth } from '../../contexts/AuthContext';
 import CommentForm from '../../components/CommentForm';
-import { FaHeart, FaRegHeart, FaPlay } from 'react-icons/fa';
-import { 
-  PageContainer, 
-  MovieInfo, 
-  MovieImage, 
-  MovieDetails, 
-  MovieTitle, 
-  MovieRating, 
+import { FaHeart, FaRegHeart, FaPlay, FaStar, FaRegStar } from 'react-icons/fa';
+import {
+  PageContainer,
+  MovieInfo,
+  MovieImage,
+  MovieDetails,
+  MovieTitle,
+  MovieRating,
   MovieDescription,
   CommentsSection,
   SectionTitle,
   ActionButtons,
   ActionButton,
-  MovieMeta
+  MovieMeta,
+  UserRatingContainer,
+  RatingText,
+  StarButton,
+  LoginPrompt
 } from './styles';
 
 const MovieDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { getMovieById, favoriteMovies, addToFavorites, removeFromFavorites, addToWatched } = useMovies();
+  const { isAuthenticated, user } = useAuth();
 
   const movie = getMovieById(id || '');
   const isFavorite = favoriteMovies.some(fav => fav.id === id);
+
+  const [userRating, setUserRating] = useState<number>(0);
+  const [hoveredStar, setHoveredStar] = useState<number>(0);
 
   if (!movie) {
     return (
@@ -49,6 +58,49 @@ const MovieDetailsPage: React.FC = () => {
   const handleWatchMovie = () => {
     addToWatched(movie.id);
     console.log('Filme adicionado ao histórico');
+  };
+
+  const handleStarClick = (starValue: number) => {
+    if (!isAuthenticated) {
+      return; // Não permite avaliação se não estiver logado
+    }
+    setUserRating(starValue);
+    // Mock: aqui seria feita a chamada para a API para salvar a avaliação
+    console.log(`Usuário ${user?.name} avaliou o filme ${movie.title} com ${starValue} estrelas`);
+  };
+
+  const handleStarHover = (starValue: number) => {
+    if (!isAuthenticated) {
+      return; // Não permite hover se não estiver logado
+    }
+    setHoveredStar(starValue);
+  };
+
+  const handleStarLeave = () => {
+    if (!isAuthenticated) {
+      return;
+    }
+    setHoveredStar(0);
+  };
+
+  const renderStars = () => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      const isFilled = i <= (hoveredStar || userRating);
+      stars.push(
+        <StarButton
+          key={i}
+          onClick={() => handleStarClick(i)}
+          onMouseEnter={() => handleStarHover(i)}
+          onMouseLeave={handleStarLeave}
+          filled={isFilled}
+          disabled={!isAuthenticated}
+        >
+          {isFilled ? <FaStar /> : <FaRegStar />}
+        </StarButton>
+      );
+    }
+    return stars;
   };
 
   return (
@@ -84,6 +136,23 @@ const MovieDetailsPage: React.FC = () => {
               {isFavorite ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}
             </ActionButton>
           </ActionButtons>
+
+          <UserRatingContainer>
+            {isAuthenticated ? (
+              <>
+                <RatingText>Sua avaliação:</RatingText>
+                <div className="stars">
+                  {renderStars()}
+                </div>
+              </>
+            ) : (
+              <LoginPrompt>
+                <RatingText>Para avaliar este filme, você precisa estar logado.</RatingText>
+                <Link to="/login">Fazer login</Link>
+              </LoginPrompt>
+            )}
+          </UserRatingContainer>
+
         </MovieDetails>
       </MovieInfo>
 

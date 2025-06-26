@@ -127,3 +127,70 @@ export const SectionTitle = styled.h2`
   font-size: 1.8rem;
 `;
 
+
+
+export const UserRatingContainer = styled.div`
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  text-align: center;
+
+  .stars {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+  }
+`;
+
+export const RatingText = styled.p`
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+`;
+
+export const StarButton = styled.button<{ filled: boolean; disabled?: boolean }>`
+  background: none;
+  border: none;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  padding: 5px;
+  transition: all 0.2s ease;
+  opacity: ${props => props.disabled ? 0.5 : 1};
+
+  svg {
+    color: ${props => props.filled ? '#DAA520' : '#ddd'};
+    font-size: 1.8rem;
+    transition: color 0.2s ease;
+  }
+
+  &:hover svg {
+    color: ${props => props.disabled ? (props.filled ? '#DAA520' : '#ddd') : '#DAA520'};
+    transform: ${props => props.disabled ? 'none' : 'scale(1.1)'};
+  }
+
+  &:active {
+    transform: ${props => props.disabled ? 'none' : 'scale(0.95)'};
+  }
+`;
+
+export const LoginPrompt = styled.div`
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+
+  a {
+    color: #DAA520;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 10px;
+    display: inline-block;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+

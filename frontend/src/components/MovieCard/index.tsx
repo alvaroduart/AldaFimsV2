@@ -13,14 +13,14 @@ interface MovieCardProps {
   showFavoriteButton?: boolean;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ 
-  id, 
-  title, 
-  image, 
-  rating, 
+const MovieCard: React.FC<MovieCardProps> = ({
+  id,
+  title,
+  image,
+  rating,
   onClick,
- 
-}) => {  
+
+}) => {
 
   const handleClick = () => {
     if (onClick) {
@@ -37,7 +37,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
         <RatingContainer>
           <FaStar />
           <MovieRating>{rating.toFixed(1)}</MovieRating>
-        </RatingContainer>        
+        </RatingContainer>
       </Link>
     </CardContainer>
   );
