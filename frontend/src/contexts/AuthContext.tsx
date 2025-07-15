@@ -1,6 +1,17 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { AuthContextType, User, ReactNode } from '../types';
-import { mockAPI } from '../mocks';
+import React, { createContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import UserData from '../services/api/users';
+import type { User } from '../services/api/users';
+
+interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (userData: User) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -10,90 +21,101 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
+  const isAuthenticated = !!user;
+
+  // Função para verificar se o usuário está logado ao carregar a aplicação
+  const checkAuthStatus = async () => {
+    try {
+      setIsLoading(true);
+      const response = await UserData.me();
+      setUser(response.data);
+    } catch (error) {
+      console.error('Erro ao verificar status de autenticação:', error);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Função de login
+  const login = async (email: string, password: string) => {
+    try {
+      setIsLoading(true);
+      const response = await UserData.login(email, password);
+      setUser(response.data);
+    } catch (error) {
+      console.error('Erro no login:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Função de registro
+  const register = async (userData: User) => {
+    try {
+      setIsLoading(true);
+      const response = await UserData.register(userData);
+      setUser(response.data);
+    } catch (error) {
+      console.error('Erro no registro:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Função de logout
+  const logout = async () => {
+    try {
+      setIsLoading(true);
+      await UserData.logout();
+      setUser(null);
+    } catch (error) {
+      console.error('Erro no logout:', error);
+      // Mesmo com erro, limpa o usuário localmente
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Função para atualizar dados do usuário
+  const refreshUser = async () => {
+    if (!isAuthenticated) return;
+    
+    try {
+      const response = await UserData.me();
+      setUser(response.data);
+    } catch (error) {
+      console.error('Erro ao atualizar dados do usuário:', error);
+      // Se falhar ao buscar dados, pode ser que o token expirou
+      setUser(null);
+    }
+  };
+
+  // Verificar status de autenticação ao montar o componente
   useEffect(() => {
-    // Verificar se há um usuário logado no localStorage
-    const checkAuthStatus = () => {
-      const isAuthenticated = localStorage.getItem('isAuthenticated');
-      const userData = localStorage.getItem('userData');
-      
-      if (isAuthenticated === 'true' && userData) {
-        try {
-          const parsedUser = JSON.parse(userData);
-          setUser(parsedUser);
-        } catch (error) {
-          console.error('Erro ao parsear dados do usuário:', error);
-          localStorage.removeItem('isAuthenticated');
-          localStorage.removeItem('userData');
-        }
-      }
-      
-      setLoading(false);
-    };
-
     checkAuthStatus();
   }, []);
 
-  const login = async (email: string, password: string, rememberMe: boolean = false) => {
-    setLoading(true);
-    try {
-      const userData = await mockAPI.login(email, password);
-      setUser(userData);
-      
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userData', JSON.stringify(userData));
-      
-      if (rememberMe) {
-        localStorage.setItem('rememberMe', 'true');
-      }
-
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const register = async (name: string, email: string, password: string) => {
-    setLoading(true);
-    try {
-      const userData = await mockAPI.register(name, email, password);
-      setUser(userData);
-      
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userData', JSON.stringify(userData));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('rememberMe');
-  };
-
-  const value: AuthContextType = {
+  const contextValue: AuthContextType = {
     user,
-    isAuthenticated: !!user,
+    isAuthenticated,
+    isLoading,
     login,
     register,
     logout,
-    loading
+    refreshUser,
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
-  }
-  return context;
-};
+// Removido useAuth e export default AuthContext para evitar Fast Refresh error
