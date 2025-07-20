@@ -1,23 +1,22 @@
 import {api} from "../http/axios"
+import type { IMovie } from "./movies";
 
-export interface History {
-    id?: string;
+export interface IHistory {
+    movie: IMovie;
     userId: string;
-    movieId: string;
-    createdAt?: Date;
 }
 
 class HistoryData {
-    get_user_history(userId: string) {
-        return api.get<History[]>(`/history/user/${userId}`);
+    get_user_history() {
+        return api.get<IHistory[]>(`/history/`);
     }
 
-    add_to_history(userId: string, movieId: string) {
-        return api.post<History>(`/history`, { userId, movieId });
+    add_to_history( movieId: string) {
+        return api.post<IHistory>(`/history/`, { movieId });
     }
 
-    remove_from_history(id: string) {
-        return api.delete(`/history/${id}`);
+    remove_from_history(movieId: string) {
+        return api.delete(`/history/`, {data: { movieId }});
     }
 }
 

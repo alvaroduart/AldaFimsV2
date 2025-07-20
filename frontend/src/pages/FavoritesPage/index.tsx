@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MovieCard from '../../components/MovieCard';
-import { useMovies } from '../../contexts/MovieContext';
 import { PageContainer, PageTitle, MoviesGrid, EmptyState, RemoveButton } from './styles';
+import { useFavorite } from '../../hooks/useFavorite';
 
 const FavoritesPage: React.FC = () => {
-  const { favoriteMovies, removeFromFavorites } = useMovies();
+  const { favorites, removeFromFavorites, getUserFavorites } = useFavorite();
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      await getUserFavorites();
+    };
+    fetchFavorites();
+  }, []);
 
   const handleMovieClick = (movieId: string) => {
     console.log('Clicou no filme favorito:', movieId);
@@ -20,20 +27,20 @@ const FavoritesPage: React.FC = () => {
     <PageContainer>
       <PageTitle>Meus Favoritos</PageTitle>
       
-      {favoriteMovies.length > 0 ? (
+      {favorites.length > 0 ? (
         <MoviesGrid>
-          {favoriteMovies.map((movie) => (
-            <div key={movie.id} style={{ position: 'relative' }}>
+          {favorites.map((favorite) => (
+            <div key={favorite.movie.id} style={{ position: 'relative' }}>
               <MovieCard
-                id={movie.id}
-                title={movie.title}
-                image={movie.image}
-                rating={movie.rating}
-                onClick={() => handleMovieClick(movie.id)}
+                id={favorite.movie.id}
+                title={favorite.movie.title}
+                image={favorite.movie.image}
+                rating={favorite.movie.rating}
+                onClick={() => handleMovieClick(favorite.movie.id)}
                 showFavoriteButton={false}
               />
               <RemoveButton
-                onClick={(e) => handleRemoveFromFavorites(movie.id, e)}
+                onClick={(e) => handleRemoveFromFavorites(favorite.movie.id, e)}
                 title="Remover dos favoritos"
               >
                 ✕

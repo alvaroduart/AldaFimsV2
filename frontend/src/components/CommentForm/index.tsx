@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa';
-import { useAuth } from '../../contexts/AuthContext';
-import { mockAPI } from '../../mocks';
+import { useAuth } from '../../hooks/useAuth';
 import type { Comment } from '../../types';
 import { 
   FormContainer, 
@@ -17,14 +16,16 @@ import {
   EditTextArea,
   LoginPrompt 
 } from './styles';
+import { useComments } from '../../hooks/useComments';
 
 interface CommentFormProps {
-  onSubmit: (comment: string) => void;
+  //onSubmit: (comment: string) => void;
   movieId?: string;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
+const CommentForm: React.FC<CommentFormProps> = ({ movieId }) => {
   const { user, isAuthenticated } = useAuth();
+  const { getCommentsByMovieId, addComment, updateComment, deleteComment} = useComments()
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -36,8 +37,13 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
       if (movieId) {
         setLoading(true);
         try {
-          const movieComments = await mockAPI.getCommentsByMovieId(movieId);
-          setComments(movieComments);
+          const fetchComments = async () => {
+            
+            const movieComments = await getCommentsByMovieId(movieId);
+            setComments(movieComments);
+            
+          }
+          fetchComments();
         } catch (error) {
           console.error('Erro ao carregar comentários:', error);
         } finally {
@@ -49,7 +55,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
     loadComments();
   }, [movieId]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated) {
       alert('Você precisa estar logado para comentar!');
@@ -57,18 +63,9 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
     }
     
     if (comment.trim() && movieId) {
-      const newComment: Comment = {
-        id: Date.now().toString(),
-        movieId,
-        userId: user?.id || '',
-        userName: user?.name || 'Usuário',
-        content: comment.trim(),
-        createdAt: new Date()
-      };
-      
-      setComments([newComment, ...comments]);
-      setComment('');
-      onSubmit(comment.trim());
+      await addComment(movieId, comment.trim());
+      const movieComments = await getCommentsByMovieId(movieId);
+      setComments(movieComments);
     }
   };
 
@@ -77,13 +74,22 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
     setEditText(currentText);
   };
 
-  const handleSaveEdit = (commentId: string) => {
+  const handleSaveEdit = async (commentId: string) => {
     if (editText.trim()) {
       setComments(comments.map(c => 
         c.id === commentId 
           ? { ...c, content: editText.trim() }
           : c
       ));
+
+      const update = await updateComment(commentId, movieId!, editText.trim());
+      if (update) {
+        const movieComments = await getCommentsByMovieId(movieId!);
+        setComments(movieComments);
+      } else {
+        alert('Erro ao atualizar comentário');
+      }
+      
       setEditingId(null);
       setEditText('');
     }
@@ -94,13 +100,16 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
     setEditText('');
   };
 
-  const handleDelete = (commentId: string) => {
+  const handleDelete = async (commentId: string) => {
     if (window.confirm('Tem certeza que deseja excluir este comentário?')) {
-      setComments(comments.filter(c => c.id !== commentId));
+      await deleteComment(commentId);
+      const movieComments = await getCommentsByMovieId(movieId!);
+      setComments(movieComments);
     }
   };
 
   const canEditComment = (commentUserId: string) => {
+    console.log('Verificando se o usuário pode editar o comentário:', user?.id, commentUserId);
     return isAuthenticated && user?.id === commentUserId;
   };
 
@@ -137,7 +146,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
           comments.map((commentItem) => (
             <CommentItem key={commentItem.id}>
               <CommentAuthor>{commentItem.userName}</CommentAuthor>
-              <CommentDate>{commentItem.createdAt.toLocaleDateString('pt-BR')}</CommentDate>
+              <CommentDate>{commentItem.createdAt.toString()}</CommentDate>
               
               {editingId === commentItem.id ? (
                 <div>
@@ -148,7 +157,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
                   />
                   <CommentActions>
                     <ActionButton 
-                      onClick={() => handleSaveEdit(commentItem.id)}
+                      onClick={() => handleSaveEdit(commentItem.id!)}
                       color="#27ae60"
                       title="Salvar"
                     >
@@ -166,17 +175,17 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, movieId }) => {
               ) : (
                 <div>
                   <CommentText>{commentItem.content}</CommentText>
-                  {canEditComment(commentItem.userId) && (
+                  {canEditComment(commentItem.user.id!) && (
                     <CommentActions>
                       <ActionButton 
-                        onClick={() => handleEdit(commentItem.id, commentItem.content)}
+                        onClick={() => handleEdit(commentItem.id!, commentItem.content)}
                         color="#3498db"
                         title="Editar"
                       >
                         <FaEdit />
                       </ActionButton>
                       <ActionButton 
-                        onClick={() => handleDelete(commentItem.id)}
+                        onClick={() => handleDelete(commentItem.id!)}
                         color="#e74c3c"
                         title="Excluir"
                       >

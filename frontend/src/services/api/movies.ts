@@ -1,8 +1,8 @@
 import {api} from "../http/axios"
 
 
-export interface Movie {
-    movieid: string;
+export interface IMovie {
+    id: string;
     title: string;
     image: string;
     rating: number;    
@@ -11,20 +11,20 @@ export interface Movie {
     duration: string;
     director: string;
     createdAt?: Date;
-   
+    userRating?: number;
 }
 
 class MovieData {
     get_all_movies() {
-        return api.get<Movie[]>('/movies');
+        return api.get<IMovie[]>('/movies/');
     }
 
     get_movie_by_id(id: string) {
-        return api.get<Movie>(`/movies/${id}`);
+        return api.get<IMovie>(`/movies/${id}`);
     }
 
     seach_movies(query: string) {
-        return api.get<Movie[]>(`/movies/search`, {
+        return api.get<IMovie[]>(`/movies/search/`, {
             params: { query }
         });
     }

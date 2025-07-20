@@ -1,4 +1,3 @@
-
 import { api } from "./axios";
 
 let onLogout: (() => void) | null = null;
@@ -7,9 +6,13 @@ export function setupInterceptors(logoutCallback?: () => void) {
     onLogout = logoutCallback ?? null;
 
     api.interceptors.request.use((config) => {
-        const token = localStorage.getItem("token") // localStorage.getItem("token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        const userS = (localStorage.getItem("currentUser"));
+        if (userS) {
+            const { access_token } = JSON.parse(userS);
+            if (!access_token) {
+                return config;
+            }
+            config.headers.Authorization = `Bearer ${access_token}`;
         }
         return config;
     })

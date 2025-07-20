@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSearch, FaFilter, FaMoon, FaSun, FaUser, FaSignOutAlt } from 'react-icons/fa';
-import { useAuth } from '../../contexts/AuthContext';
+import { FaSearch, FaMoon, FaSun, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { useAuth } from '../../hooks/useAuth';
 import { HeaderContainer, Logo, MenuButton, Navigation, SearchForm, SearchInput, IconButton, UserMenu, UserMenuDropdown } from './styles';
 
 interface HeaderProps {
@@ -26,8 +26,8 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode = false, onToggleDarkMode })
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implementar lógica de busca
-    console.log('Buscar por:', searchTerm);
+    if (!searchTerm.trim()) return;
+    navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
   };
 
   const handleLogout = () => {
@@ -68,9 +68,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode = false, onToggleDarkMode })
         <IconButton type="submit" aria-label="Pesquisar">
           <FaSearch />
         </IconButton>
-        <IconButton type="button" aria-label="Filtros">
-          <FaFilter />
-        </IconButton>
+        
         <IconButton 
           type="button" 
           aria-label="Alternar tema"
@@ -91,7 +89,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode = false, onToggleDarkMode })
           </IconButton>
           {isUserMenuOpen && (
             <UserMenuDropdown>
-              <div>Olá, {user?.name}</div>
+              <div>Olá, {user?.username}</div>
               <Link to="/favoritos">Favoritos</Link>
               <Link to="/historico">Histórico</Link>
               <button onClick={handleLogout}>

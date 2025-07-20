@@ -1,23 +1,25 @@
 import {api} from "../http/axios"
+import type { IMovie } from "./movies";
 
-export interface Favorite {
+export interface IFavorite {
     id?: string;
     userId: string;
     movieId: string;
     createdAt?: Date;
+    movie: IMovie
 }
 
 class FavoriteData {
-    get_user_favorites(userId: string) {
-        return api.get<Favorite[]>(`/favorites/user/${userId}`);
+    get_user_favorites() {
+        return api.get<IFavorite[]>(`/favorites/`);
     }
 
-    add_to_favorite(userId: string, movieId: string) {
-        return api.post<Favorite>(`/favorites`, { userId, movieId });
+    add_to_favorite(movieId: string) {
+        return api.post<IFavorite>(`/favorites/`, { movieId });
     }
 
-    remove_favorites(id: string) {
-        return api.delete(`/favorites/${id}`);
+    remove_favorites(movieId: string) {
+        return api.delete(`/favorites/`, { data: { movieId } });
     }
 }
 

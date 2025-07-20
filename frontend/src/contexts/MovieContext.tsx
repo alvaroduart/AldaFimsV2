@@ -1,7 +1,7 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 import type { ReactNode } from 'react';
-import MovieData from '../services/api/movies';
-import type { Movie } from '../services/api/movies';
+import { apiMovie, apiRating } from '../services';
+import type { Movie } from '../types';
 
 interface MovieContextType {
   movies: Movie[];
@@ -12,7 +12,9 @@ interface MovieContextType {
   searchQuery: string;
   getAllMovies: () => Promise<void>;
   getMovieById: (id: string) => Promise<Movie | null>;
-  searchMovies: (query: string) => Promise<void>;
+  searchMovies: (query: string) => Promise<Movie[]>;
+  addRating: (movieId: string, rating: number) => Promise<void>;
+  updateRating: (movieId: string, rating: number) => Promise<void>;
   clearSearch: () => void;
   setCurrentMovie: (movie: Movie | null) => void;
 }
@@ -35,7 +37,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const getAllMovies = async () => {
     try {
       setIsLoading(true);
-      const response = await MovieData.get_all_movies();
+      const response = await apiMovie.get_all_movies();
       setMovies(response.data);
     } catch (error) {
       console.error('Erro ao buscar filmes:', error);
@@ -49,7 +51,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const getMovieById = async (id: string): Promise<Movie | null> => {
     try {
       setIsLoading(true);
-      const response = await MovieData.get_movie_by_id(id);
+      const response = await apiMovie.get_movie_by_id(id);
       const movie = response.data;
       setCurrentMovie(movie);
       return movie;
@@ -66,19 +68,46 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const searchMovies = async (query: string) => {
     if (!query.trim()) {
       clearSearch();
-      return;
+      return [];
     }
 
     try {
       setIsSearching(true);
       setSearchQuery(query);
-      const response = await MovieData.seach_movies(query);
-      setSearchResults(response.data);
+      const response = await apiMovie.seach_movies(query);
+      return response.data;
     } catch (error) {
       console.error('Erro ao pesquisar filmes:', error);
       setSearchResults([]);
+      return []
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const addRating = async (movieId: string, rating: number) => {
+    try {
+      setIsLoading(true);
+      const response = await apiRating.addRating({ movieId, rating });
+      console.log('Avaliação adicionada:', response.data);
+    } catch (error) {
+      console.error('Erro ao adicionar avaliação:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const updateRating = async (movieId: string, rating: number) => {
+    try {
+      setIsLoading(true);
+      const response = await apiRating.updateRating({ movieId, rating });
+      console.log('Avaliação atualizada:', response.data);
+    } catch (error) {
+      console.error('Erro ao atualizar avaliação:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -88,11 +117,6 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     setSearchQuery('');
     setIsSearching(false);
   };
-
-  // Carregar todos os filmes ao montar o componente
-  useEffect(() => {
-    getAllMovies();
-  }, []);
 
   const contextValue: MovieContextType = {
     movies,
@@ -104,6 +128,8 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     getAllMovies,
     getMovieById,
     searchMovies,
+    addRating,
+    updateRating,
     clearSearch,
     setCurrentMovie,
   };

@@ -1,22 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MovieCard from '../../components/MovieCard';
-import { useMovies } from '../../contexts/MovieContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import { PageContainer, PageTitle, MoviesGrid, EmptyState, RemoveButton } from './styles';
+import { useHistory } from '../../hooks/useHistory';
 
 const HistoryPage: React.FC = () => {
-  const { watchedMovies, removeFromWatched } = useMovies();
+  const { history, removeFromHistory, getUserHistory } = useHistory();
   const { user } = useAuth();
 
   const handleMovieClick = (movieId: string) => {
     console.log('Clicou no filme do histórico:', movieId);
-    
   };
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (user) {
+        await getUserHistory();
+      }
+    }
+    fetchHistory();
+  }, [ user]);
 
   const handleRemoveFromHistory = (movieId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    removeFromWatched(movieId);
+    removeFromHistory(movieId);
   };
 
   // Se o usuário não estiver logado, não deve chegar aqui devido ao PrivateRoute
@@ -35,20 +43,20 @@ const HistoryPage: React.FC = () => {
     <PageContainer>
       <PageTitle>Histórico de Filmes</PageTitle>
       
-      {watchedMovies.length > 0 ? (
+      {history.length > 0 ? (
         <MoviesGrid>
-          {watchedMovies.map((movie) => (
-            <div key={movie.id} style={{ position: 'relative' }}>
+          {history.map((history) => (
+            <div key={history.movie.id} style={{ position: 'relative' }}>
               <MovieCard
-                id={movie.id}
-                title={movie.title}
-                image={movie.image}
-                rating={movie.rating}
-                onClick={() => handleMovieClick(movie.id)}
+                id={history.movie.id}
+                title={history.movie.title}
+                image={history.movie.image}
+                rating={history.movie.rating}
+                onClick={() => handleMovieClick(history.movie.id)}
                 showFavoriteButton={false}
               />
               <RemoveButton
-                onClick={(e) => handleRemoveFromHistory(movie.id, e)}
+                onClick={(e) => handleRemoveFromHistory(history.movie.id, e)}
                 title="Remover do histórico"
               >
                 ✕

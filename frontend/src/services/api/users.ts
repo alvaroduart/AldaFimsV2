@@ -1,27 +1,25 @@
+import type { UserToken } from "../../types";
 import {api} from "../http/axios"
 
-export interface User {
+export interface IUser {
     id?: string;
     username: string;
     email: string;
     password?: string; // Senha não deve ser retornada pela API
-    favorites: string[];
-    history: string[];
-
 }
 
 class UserData{
-    register(data: User)
+    register(data: IUser)
     {
-        return api.post<User>('/users/register', data);
+        return api.post<IUser>('/users/register', data);
     }
 
     login(email: string, password: string) {
-        return api.post<User>('/users/login', { email, password });
+        return api.post<UserToken>('/users/login', { email, password });
     }
 
     me() {
-        return api.get<User>('/users/me');
+        return api.get<IUser>('/users/me');
     }
 
     logout() {

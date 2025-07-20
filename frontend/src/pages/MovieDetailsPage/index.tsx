@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useMovies } from '../../contexts/MovieContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useMovie } from '../../hooks/useMovie';
+import { useAuth } from '../../hooks/useAuth';
 import CommentForm from '../../components/CommentForm';
 import { FaHeart, FaRegHeart, FaPlay, FaStar, FaRegStar } from 'react-icons/fa';
 import {
@@ -22,19 +22,55 @@ import {
   StarButton,
   LoginPrompt
 } from './styles';
+import { useFavorite } from '../../hooks/useFavorite';
+import { useHistory } from '../../hooks/useHistory';
+import type { Movie } from '../../types';
 
 const MovieDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { getMovieById, favoriteMovies, addToFavorites, removeFromFavorites, addToWatched } = useMovies();
+  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorite();
+  const { getMovieById, addRating, updateRating } = useMovie();
+  const {  addToHistory } = useHistory();
   const { isAuthenticated, user } = useAuth();
+  const [movie, setMovie] = useState<Movie|null>(null);
+  const [isFavoriteUser, setIsFavoriteUser] = useState(false);
+  //const [isInHistoryUser, setIsInHistoryUser] = useState(false);
 
-  const movie = getMovieById(id || '');
-  const isFavorite = favoriteMovies.some(fav => fav.id === id);
+ 
 
   const [userRating, setUserRating] = useState<number>(0);
   const [hoveredStar, setHoveredStar] = useState<number>(0);
 
-  if (!movie) {
+  useEffect(() => {
+
+    const fetchMovie = async () => {
+      const movieData = await getMovieById(id || '');
+      if (movieData) {
+        setMovie(movieData);
+        if (movieData.userRating){
+          setUserRating(movieData.userRating);
+        }
+      }
+    };
+    
+    fetchMovie();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchUser=async () =>{
+      if (isAuthenticated && user && movie) {
+        const inFavorites = await isFavorite(movie.id);
+        //const inHistory = await isInHistory(movie.id);
+
+        // Check if the movie is in user's favorites or history
+        setIsFavoriteUser(inFavorites);
+    
+    }
+    }
+    fetchUser();
+}, [isAuthenticated, user]);
+
+  if (!id || !movie) {
     return (
       <PageContainer>
         <h2>Filme não encontrado</h2>
@@ -42,31 +78,32 @@ const MovieDetailsPage: React.FC = () => {
     );
   }
 
-  const handleComment = (comment: string) => {
-    console.log('Novo comentário:', comment);
-    
-  };
-
   const handleFavoriteToggle = () => {
-    if (isFavorite) {
+    if (isFavoriteUser) {
       removeFromFavorites(movie.id);
     } else {
       addToFavorites(movie.id);
     }
   };
 
-  const handleWatchMovie = () => {
-    addToWatched(movie.id);
+  const handleWatchMovie = async () => {
+    await addToHistory(movie.id);
     console.log('Filme adicionado ao histórico');
   };
 
-  const handleStarClick = (starValue: number) => {
+  const handleStarClick = async (starValue: number) => {
     if (!isAuthenticated) {
       return; // Não permite avaliação se não estiver logado
     }
+    if(starValue){
+      await updateRating(movie.id, starValue);
+    }else{ 
+      await addRating(movie.id, starValue);
+    }
+    
     setUserRating(starValue);
     // Mock: aqui seria feita a chamada para a API para salvar a avaliação
-    console.log(`Usuário ${user?.name} avaliou o filme ${movie.title} com ${starValue} estrelas`);
+    console.log(`Usuário ${user?.username} avaliou o filme ${movie.title} com ${starValue} estrelas`);
   };
 
   const handleStarHover = (starValue: number) => {
@@ -130,10 +167,10 @@ const MovieDetailsPage: React.FC = () => {
             </ActionButton>
             <ActionButton 
               onClick={handleFavoriteToggle}
-              isFavorite={isFavorite}
+              isFavorite={isFavoriteUser}
             >
-              {isFavorite ? <FaHeart /> : <FaRegHeart />}
-              {isFavorite ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}
+              {isFavoriteUser ? <FaHeart /> : <FaRegHeart />}
+              {isFavoriteUser ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}
             </ActionButton>
           </ActionButtons>
 
@@ -158,7 +195,7 @@ const MovieDetailsPage: React.FC = () => {
 
       <CommentsSection>
         <SectionTitle>Comentários</SectionTitle>
-        <CommentForm onSubmit={handleComment} movieId={movie.id} />
+        <CommentForm movieId={movie.id} />
       </CommentsSection>
     </PageContainer>
   );

@@ -1,6 +1,6 @@
 import {api} from "../http/axios"
 
-export interface Contact{
+export interface IContact{
     id: string;
     name: string;
     email: string;
@@ -9,8 +9,8 @@ export interface Contact{
 }
 
 class ContactData {
-    create_contact(contact: Omit<Contact, 'id' | 'createdAt'>) {
-        return api.post<Contact>('/contacts', contact);
+    create_contact(contact: Omit<IContact, 'id' | 'createdAt'>) {
+        return api.post<IContact>('/contact/', contact);
     }
 }
 

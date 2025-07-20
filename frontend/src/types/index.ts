@@ -11,25 +11,47 @@ export interface Movie {
   duration?: string;
   director?: string;
   cast?: string[];
+  userRating?: number; // Avaliação do usuário
+}
+
+export interface Favorite{
+  userId:string,
+  movie: Movie,
+}
+
+export interface History{
+  userId: string;
+  movie: Movie;
 }
 
 export interface User {
-  id: string;
-  name: string;
+  id?: string;
+  username: string;
   email: string;
-  password?: string; 
-  favoriteMovies: string[];
-  watchedMovies: string[];
-  createdAt: Date;
+  password?: string;
+}
+
+export interface UserToken {
+  accessToken: string;
+  type: string;
+  user: User;
 }
 
 export interface Comment {
-  id: string;
+  id?: string;
   movieId: string;
   userId: string;
+  user: User;
   userName: string;
   content: string;
   createdAt: Date;
+}
+
+export interface Contact {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
 }
 
 export interface AuthContextType {
