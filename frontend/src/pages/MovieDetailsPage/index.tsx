@@ -95,13 +95,14 @@ const MovieDetailsPage: React.FC = () => {
     if (!isAuthenticated) {
       return; // Não permite avaliação se não estiver logado
     }
-    if(starValue){
+    if(movie.userRating){
       await updateRating(movie.id, starValue);
     }else{ 
       await addRating(movie.id, starValue);
     }
     
     setUserRating(starValue);
+    movie.userRating=starValue
     // Mock: aqui seria feita a chamada para a API para salvar a avaliação
     console.log(`Usuário ${user?.username} avaliou o filme ${movie.title} com ${starValue} estrelas`);
   };
